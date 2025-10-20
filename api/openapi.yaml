@@ -1,0 +1,468 @@
+openapi: 3.0.4
+info:
+  description: |-
+    Especificacion OpenAPI del microservicio de "Estadisticas" dentro del proyecto "Undersounds" de GPS/ASEE.
+
+    El codigo del proyecto esta disponible en el [repositorio de GitHub](https://github.com/UniExtremadura/proyecto-gps-25-26-ga05).
+  title: Microservicio de Estadisticas - GA04
+  version: 0.1.0
+servers:
+- url: /
+paths:
+  /escuchas:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Escucha"
+        required: true
+      responses:
+        "201":
+          description: Escucha registrada exitosamente
+        "400":
+          description: Datos de entrada invalidos
+      summary: Registrar una nueva escucha de cancion
+  /compras/albumes:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompraAlbum"
+        required: true
+      responses:
+        "201":
+          description: Compra de album registrada exitosamente
+        "400":
+          description: Datos de entrada invalidos
+      summary: Registrar compra de album
+  /compras/merchandising:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompraMerch"
+        required: true
+      responses:
+        "201":
+          description: Compra de merch registrada exitosamente
+        "400":
+          description: Datos de entrada invalidos
+      summary: Registrar compra de merchandising
+  /usuarios/{idUsuario}/historialCompras:
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: idUsuario
+        required: true
+        schema:
+          example: 123
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HistorialCompras"
+          description: Historial de compras obtenido exitosamente
+        "404":
+          description: Usuario no encontrado
+      summary: Obtener historial de compras de un usuario
+  /estadisticas/canciones/{idCancion}:
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: idCancion
+        required: true
+        schema:
+          example: 456
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstadisticasCancion"
+          description: Estadisticas de la cancion
+        "404":
+          description: Cancion no encontrada
+      summary: Obtener estadisticas de una cancion
+  /estadisticas/albumes/{idAlbum}:
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: idAlbum
+        required: true
+        schema:
+          example: 789
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstadisticasAlbum"
+          description: Estadisticas del album
+        "404":
+          description: Album no encontrado
+      summary: Obtener estadisticas de un album
+  /estadisticas/merchandising/{idMerch}:
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: idMerch
+        required: true
+        schema:
+          example: 321
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstadisticasMerch"
+          description: Estadisticas del merch
+        "404":
+          description: Producto no encontrado
+      summary: Obtener estadisticas de un producto de merchandising
+  /usuarios/{idUsuario}/estadisticas:
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: idUsuario
+        required: true
+        schema:
+          example: 123
+          type: integer
+        style: simple
+      - explode: true
+        in: query
+        name: periodo
+        required: false
+        schema:
+          default: total
+          enum:
+          - mes
+          - anno
+          - total
+          example: mes
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstadisticasUsuario"
+          description: Estadisticas del usuario
+        "404":
+          description: Usuario no encontrado
+      summary: Obtener estadisticas de consumo de un usuario
+  /ranking/canciones:
+    get:
+      parameters:
+      - explode: true
+        in: query
+        name: limite
+        required: false
+        schema:
+          default: 10
+          example: 20
+          maximum: 100
+          minimum: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: periodo
+        required: false
+        schema:
+          default: total
+          enum:
+          - mes
+          - anno
+          - total
+          example: anno
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/RankingCancion"
+                type: array
+          description: Ranking de canciones
+      summary: Obtener ranking de canciones mas escuchadas
+components:
+  schemas:
+    Escucha:
+      example:
+        idCancion: 456
+        fecha: 2024-10-06T14:30:00Z
+        idUsuario: 123
+      properties:
+        idUsuario:
+          description: ID del usuario
+          example: 123
+          type: integer
+        idCancion:
+          description: ID de la cancion
+          example: 456
+          type: integer
+        fecha:
+          description: Fecha y hora de la escucha
+          example: 2024-10-06T14:30:00Z
+          format: date-time
+          type: string
+      required:
+      - fecha
+      - idCancion
+      - idUsuario
+      type: object
+    CompraAlbum:
+      example:
+        fecha: 2024-10-05T10:15:00Z
+        idUsuario: 123
+        idAlbum: 789
+      properties:
+        idUsuario:
+          description: ID del usuario
+          example: 123
+          type: integer
+        idAlbum:
+          description: ID del album
+          example: 789
+          type: integer
+        fecha:
+          description: Fecha y hora de la compra
+          example: 2024-10-05T10:15:00Z
+          format: date-time
+          type: string
+      required:
+      - fecha
+      - idAlbum
+      - idUsuario
+      type: object
+    CompraMerch:
+      example:
+        fecha: 2024-10-04T16:45:00Z
+        idUsuario: 123
+        idMerch: 321
+      properties:
+        idUsuario:
+          description: ID del usuario
+          example: 123
+          type: integer
+        idMerch:
+          description: ID del merch
+          example: 321
+          type: integer
+        fecha:
+          description: Fecha y hora de la compra
+          example: 2024-10-04T16:45:00Z
+          format: date-time
+          type: string
+      required:
+      - fecha
+      - idMerch
+      - idUsuario
+      type: object
+    HistorialCompras:
+      example:
+        comprasMerchandising:
+        - idMerch: 321
+          fecha: 2024-10-04
+          nombre: Camiseta Bandera
+          urlImagen: https://example.com/merch/camiseta.jpg
+        - idMerch: 322
+          fecha: 2024-08-15
+          nombre: Taza Vintage
+          urlImagen: https://example.com/merch/taza.jpg
+        comprasAlbumes:
+        - idAlbum: 789
+          fecha: 2024-10-05
+          nombre: Album Revolucion
+          urlImagen: https://example.com/albums/revolucion.jpg
+        - idAlbum: 790
+          fecha: 2024-09-20
+          nombre: Noche Estrellada
+          urlImagen: https://example.com/albums/noche.jpg
+      properties:
+        comprasAlbumes:
+          example:
+          - idAlbum: 789
+            fecha: 2024-10-05
+            nombre: Album Revolucion
+            urlImagen: https://example.com/albums/revolucion.jpg
+          - idAlbum: 790
+            fecha: 2024-09-20
+            nombre: Noche Estrellada
+            urlImagen: https://example.com/albums/noche.jpg
+          items:
+            $ref: "#/components/schemas/HistorialCompras_comprasAlbumes_inner"
+          type: array
+        comprasMerchandising:
+          example:
+          - idMerch: 321
+            fecha: 2024-10-04
+            nombre: Camiseta Bandera
+            urlImagen: https://example.com/merch/camiseta.jpg
+          - idMerch: 322
+            fecha: 2024-08-15
+            nombre: Taza Vintage
+            urlImagen: https://example.com/merch/taza.jpg
+          items:
+            $ref: "#/components/schemas/HistorialCompras_comprasMerchandising_inner"
+          type: array
+      type: object
+    EstadisticasCancion:
+      example:
+        idCancion: 456
+        totalEscuchas: 12500
+        escuchasUltimoMes: 850
+      properties:
+        idCancion:
+          description: ID de la cancion
+          example: 456
+          type: integer
+        totalEscuchas:
+          description: Numero total de reproducciones
+          example: 12500
+          type: integer
+        escuchasUltimoMes:
+          description: Numero de reproducciones en el ultimo mes
+          example: 850
+          type: integer
+      type: object
+    EstadisticasAlbum:
+      example:
+        totalVentas: 3200
+        ventasUltimoMes: 45
+        idAlbum: 789
+      properties:
+        idAlbum:
+          description: ID del album
+          example: 789
+          type: integer
+        totalVentas:
+          description: Numero total de ventas
+          example: 3200
+          type: integer
+        ventasUltimoMes:
+          description: Numero de ventas en el ultimo mes
+          example: 45
+          type: integer
+      type: object
+    EstadisticasMerch:
+      example:
+        totalVentas: 150
+        ventasUltimoMes: 12
+        idMerch: 321
+      properties:
+        idMerch:
+          description: ID del merch
+          example: 321
+          type: integer
+        totalVentas:
+          description: Numero total de ventas
+          example: 150
+          type: integer
+        ventasUltimoMes:
+          description: Numero de ventas en el ultimo mes
+          example: 12
+          type: integer
+      type: object
+    EstadisticasUsuario:
+      example:
+        totalComprasMerch: 3
+        idUsuario: 123
+        totalComprasAlbumes: 8
+        totalEscuchas: 2450
+      properties:
+        idUsuario:
+          description: ID del usuario
+          example: 123
+          type: integer
+        totalEscuchas:
+          description: Numero total de reproducciones que el usuario ha efectuado
+          example: 2450
+          type: integer
+        totalComprasAlbumes:
+          description: Numero total de compras de albumes que el usuario ha efectuado
+          example: 8
+          type: integer
+        totalComprasMerch:
+          description: Numero total de compras de merchandising que el usuario ha
+            efectuado
+          example: 3
+          type: integer
+      type: object
+    RankingCancion:
+      example:
+        posicion: 1
+        idCancion: 456
+        escuchas: 12500
+        nombreCancion: Cancion del Verano
+      properties:
+        idCancion:
+          description: ID de la cancion
+          example: 456
+          type: integer
+        nombreCancion:
+          description: Nombre de la cancion
+          example: Cancion del Verano
+          type: string
+        escuchas:
+          description: Cantidad de escuchas de la cancion
+          example: 12500
+          type: integer
+        posicion:
+          description: Posicion de la cancion en el ranking
+          example: 1
+          type: integer
+      type: object
+    HistorialCompras_comprasAlbumes_inner:
+      properties:
+        idAlbum:
+          example: 789
+          type: integer
+        fecha:
+          example: 2024-10-05
+          format: date
+          type: string
+        nombre:
+          example: Album Revolucion
+          type: string
+        urlImagen:
+          example: https://example.com/albums/revolucion.jpg
+          type: string
+      type: object
+    HistorialCompras_comprasMerchandising_inner:
+      properties:
+        idMerch:
+          example: 321
+          type: integer
+        fecha:
+          example: 2024-10-04
+          format: date
+          type: string
+        nombre:
+          example: Camiseta Bandera
+          type: string
+        urlImagen:
+          example: https://example.com/merch/camiseta.jpg
+          type: string
+      type: object
