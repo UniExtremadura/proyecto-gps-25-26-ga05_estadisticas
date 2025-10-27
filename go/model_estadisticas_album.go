@@ -12,11 +12,11 @@ package openapi
 type EstadisticasAlbum struct {
 
 	// ID del album
-	IdAlbum int32 `json:"idAlbum,omitempty"`
+	IdAlbum int32 `json:"idAlbum"`
 
 	// Numero total de ventas
-	TotalVentas int32 `json:"totalVentas,omitempty"`
+	TotalVentas int32 `json:"totalVentas"`
 
 	// Numero de ventas en el ultimo mes
-	VentasUltimoMes int32 `json:"ventasUltimoMes,omitempty"`
+	VentasUltimoMes int32 `json:"ventasUltimoMes"`
 }

@@ -12,14 +12,14 @@ package openapi
 type EstadisticasUsuario struct {
 
 	// ID del usuario
-	IdUsuario int32 `json:"idUsuario,omitempty"`
+	IdUsuario int32 `json:"idUsuario"`
 
 	// Numero total de reproducciones que el usuario ha efectuado
-	TotalEscuchas int32 `json:"totalEscuchas,omitempty"`
+	TotalEscuchas int32 `json:"totalEscuchas"`
 
 	// Numero total de compras de albumes que el usuario ha efectuado
-	TotalComprasAlbumes int32 `json:"totalComprasAlbumes,omitempty"`
+	TotalComprasAlbumes int32 `json:"totalComprasAlbumes"`
 
 	// Numero total de compras de merchandising que el usuario ha efectuado
-	TotalComprasMerch int32 `json:"totalComprasMerch,omitempty"`
+	TotalComprasMerch int32 `json:"totalComprasMerch"`
 }

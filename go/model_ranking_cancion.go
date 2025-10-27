@@ -12,14 +12,14 @@ package openapi
 type RankingCancion struct {
 
 	// ID de la cancion
-	IdCancion int32 `json:"idCancion,omitempty"`
+	IdCancion int32 `json:"idCancion"`
 
 	// Nombre de la cancion
-	NombreCancion string `json:"nombreCancion,omitempty"`
+	NombreCancion string `json:"nombreCancion"`
 
 	// Cantidad de escuchas de la cancion
-	Escuchas int32 `json:"escuchas,omitempty"`
+	Escuchas int32 `json:"escuchas"`
 
 	// Posicion de la cancion en el ranking
-	Posicion int32 `json:"posicion,omitempty"`
+	Posicion int32 `json:"posicion"`
 }

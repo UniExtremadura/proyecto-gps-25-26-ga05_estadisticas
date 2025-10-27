@@ -12,11 +12,11 @@ package openapi
 type EstadisticasMerch struct {
 
 	// ID del merch
-	IdMerch int32 `json:"idMerch,omitempty"`
+	IdMerch int32 `json:"idMerch"`
 
 	// Numero total de ventas
-	TotalVentas int32 `json:"totalVentas,omitempty"`
+	TotalVentas int32 `json:"totalVentas"`
 
 	// Numero de ventas en el ultimo mes
-	VentasUltimoMes int32 `json:"ventasUltimoMes,omitempty"`
+	VentasUltimoMes int32 `json:"ventasUltimoMes"`
 }

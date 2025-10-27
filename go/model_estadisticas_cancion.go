@@ -12,11 +12,11 @@ package openapi
 type EstadisticasCancion struct {
 
 	// ID de la cancion
-	IdCancion int32 `json:"idCancion,omitempty"`
+	IdCancion int32 `json:"idCancion"`
 
 	// Numero total de reproducciones
-	TotalEscuchas int32 `json:"totalEscuchas,omitempty"`
+	TotalEscuchas int32 `json:"totalEscuchas"`
 
 	// Numero de reproducciones en el ultimo mes
-	EscuchasUltimoMes int32 `json:"escuchasUltimoMes,omitempty"`
+	EscuchasUltimoMes int32 `json:"escuchasUltimoMes"`
 }

@@ -62,8 +62,12 @@ func DefaultHandleFunc(c *gin.Context) {
 
 type ApiHandleFunctions struct {
 
-	// Routes for the DefaultAPI part of the API
-	DefaultAPI DefaultAPI
+	// Routes for the EventosAPI part of the API
+	EventosAPI EventosAPI
+	// Routes for the MetricasAPI part of the API
+	MetricasAPI MetricasAPI
+	// Routes for the UsuariosAPI part of the API
+	UsuariosAPI UsuariosAPI
 }
 
 func getRoutes(handleFunctions ApiHandleFunctions) []Route {
@@ -72,55 +76,55 @@ func getRoutes(handleFunctions ApiHandleFunctions) []Route {
 			"ComprasAlbumesPost",
 			http.MethodPost,
 			"/compras/albumes",
-			handleFunctions.DefaultAPI.ComprasAlbumesPost,
+			handleFunctions.EventosAPI.ComprasAlbumesPost,
 		},
 		{
 			"ComprasMerchandisingPost",
 			http.MethodPost,
 			"/compras/merchandising",
-			handleFunctions.DefaultAPI.ComprasMerchandisingPost,
+			handleFunctions.EventosAPI.ComprasMerchandisingPost,
 		},
 		{
 			"EscuchasPost",
 			http.MethodPost,
 			"/escuchas",
-			handleFunctions.DefaultAPI.EscuchasPost,
+			handleFunctions.EventosAPI.EscuchasPost,
 		},
 		{
 			"EstadisticasAlbumesIdAlbumGet",
 			http.MethodGet,
 			"/estadisticas/albumes/:idAlbum",
-			handleFunctions.DefaultAPI.EstadisticasAlbumesIdAlbumGet,
+			handleFunctions.MetricasAPI.EstadisticasAlbumesIdAlbumGet,
 		},
 		{
 			"EstadisticasCancionesIdCancionGet",
 			http.MethodGet,
 			"/estadisticas/canciones/:idCancion",
-			handleFunctions.DefaultAPI.EstadisticasCancionesIdCancionGet,
+			handleFunctions.MetricasAPI.EstadisticasCancionesIdCancionGet,
 		},
 		{
 			"EstadisticasMerchandisingIdMerchGet",
 			http.MethodGet,
 			"/estadisticas/merchandising/:idMerch",
-			handleFunctions.DefaultAPI.EstadisticasMerchandisingIdMerchGet,
+			handleFunctions.MetricasAPI.EstadisticasMerchandisingIdMerchGet,
 		},
 		{
 			"RankingCancionesGet",
 			http.MethodGet,
 			"/ranking/canciones",
-			handleFunctions.DefaultAPI.RankingCancionesGet,
+			handleFunctions.MetricasAPI.RankingCancionesGet,
 		},
 		{
 			"UsuariosIdUsuarioEstadisticasGet",
 			http.MethodGet,
 			"/usuarios/:idUsuario/estadisticas",
-			handleFunctions.DefaultAPI.UsuariosIdUsuarioEstadisticasGet,
+			handleFunctions.UsuariosAPI.UsuariosIdUsuarioEstadisticasGet,
 		},
 		{
 			"UsuariosIdUsuarioHistorialComprasGet",
 			http.MethodGet,
 			"/usuarios/:idUsuario/historialCompras",
-			handleFunctions.DefaultAPI.UsuariosIdUsuarioHistorialComprasGet,
+			handleFunctions.UsuariosAPI.UsuariosIdUsuarioHistorialComprasGet,
 		},
 	}
 }

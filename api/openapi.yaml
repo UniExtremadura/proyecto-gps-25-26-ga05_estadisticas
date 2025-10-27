@@ -8,6 +8,14 @@ info:
   version: 0.1.0
 servers:
 - url: /
+tags:
+- description: Registrar todas las acciones y transacciones que realizan los usuarios
+    en el sistema.
+  name: Eventos
+- description: Consultar y analizar los datos recopilados para obtener estadísticas.
+  name: Metricas
+- description: Gestionar información específica y personalizada de cada usuario.
+  name: Usuarios
 paths:
   /escuchas:
     post:
@@ -23,6 +31,8 @@ paths:
         "400":
           description: Datos de entrada invalidos
       summary: Registrar una nueva escucha de cancion
+      tags:
+      - Eventos
   /compras/albumes:
     post:
       requestBody:
@@ -37,6 +47,8 @@ paths:
         "400":
           description: Datos de entrada invalidos
       summary: Registrar compra de album
+      tags:
+      - Eventos
   /compras/merchandising:
     post:
       requestBody:
@@ -51,6 +63,8 @@ paths:
         "400":
           description: Datos de entrada invalidos
       summary: Registrar compra de merchandising
+      tags:
+      - Eventos
   /usuarios/{idUsuario}/historialCompras:
     get:
       parameters:
@@ -72,6 +86,8 @@ paths:
         "404":
           description: Usuario no encontrado
       summary: Obtener historial de compras de un usuario
+      tags:
+      - Usuarios
   /estadisticas/canciones/{idCancion}:
     get:
       parameters:
@@ -93,6 +109,8 @@ paths:
         "404":
           description: Cancion no encontrada
       summary: Obtener estadisticas de una cancion
+      tags:
+      - Metricas
   /estadisticas/albumes/{idAlbum}:
     get:
       parameters:
@@ -114,6 +132,8 @@ paths:
         "404":
           description: Album no encontrado
       summary: Obtener estadisticas de un album
+      tags:
+      - Metricas
   /estadisticas/merchandising/{idMerch}:
     get:
       parameters:
@@ -135,6 +155,8 @@ paths:
         "404":
           description: Producto no encontrado
       summary: Obtener estadisticas de un producto de merchandising
+      tags:
+      - Metricas
   /usuarios/{idUsuario}/estadisticas:
     get:
       parameters:
@@ -169,6 +191,8 @@ paths:
         "404":
           description: Usuario no encontrado
       summary: Obtener estadisticas de consumo de un usuario
+      tags:
+      - Usuarios
   /ranking/canciones:
     get:
       parameters:
@@ -206,6 +230,8 @@ paths:
                 type: array
           description: Ranking de canciones
       summary: Obtener ranking de canciones mas escuchadas
+      tags:
+      - Metricas
 components:
   schemas:
     Escucha:
@@ -327,6 +353,9 @@ components:
           items:
             $ref: "#/components/schemas/HistorialCompras_comprasMerchandising_inner"
           type: array
+      required:
+      - comprasAlbumes
+      - comprasMerchandising
       type: object
     EstadisticasCancion:
       example:
@@ -346,6 +375,10 @@ components:
           description: Numero de reproducciones en el ultimo mes
           example: 850
           type: integer
+      required:
+      - escuchasUltimoMes
+      - idCancion
+      - totalEscuchas
       type: object
     EstadisticasAlbum:
       example:
@@ -365,6 +398,10 @@ components:
           description: Numero de ventas en el ultimo mes
           example: 45
           type: integer
+      required:
+      - idAlbum
+      - totalVentas
+      - ventasUltimoMes
       type: object
     EstadisticasMerch:
       example:
@@ -384,6 +421,10 @@ components:
           description: Numero de ventas en el ultimo mes
           example: 12
           type: integer
+      required:
+      - idMerch
+      - totalVentas
+      - ventasUltimoMes
       type: object
     EstadisticasUsuario:
       example:
@@ -409,6 +450,11 @@ components:
             efectuado
           example: 3
           type: integer
+      required:
+      - idUsuario
+      - totalComprasAlbumes
+      - totalComprasMerch
+      - totalEscuchas
       type: object
     RankingCancion:
       example:
@@ -433,6 +479,11 @@ components:
           description: Posicion de la cancion en el ranking
           example: 1
           type: integer
+      required:
+      - escuchas
+      - idCancion
+      - nombreCancion
+      - posicion
       type: object
     HistorialCompras_comprasAlbumes_inner:
       properties:
