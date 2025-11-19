@@ -9,13 +9,9 @@
 
 package openapi
 
-type HistorialComprasComprasAlbumesInner struct {
-
-	IdAlbum int32 `json:"idAlbum,omitempty"`
-
-	Fecha string `json:"fecha,omitempty"`
-
-	Nombre string `json:"nombre,omitempty"`
-
+type HistorialComprasAlbumes struct {
+	IdAlbum   int32  `json:"idAlbum,omitempty"`
+	Fecha     string `json:"fecha,omitempty"`
+	Nombre    string `json:"nombre,omitempty"`
 	UrlImagen string `json:"urlImagen,omitempty"`
 }

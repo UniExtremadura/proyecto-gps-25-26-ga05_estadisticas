@@ -10,8 +10,6 @@
 package openapi
 
 type HistorialCompras struct {
-
-	ComprasAlbumes []HistorialComprasComprasAlbumesInner `json:"comprasAlbumes"`
-
-	ComprasMerchandising []HistorialComprasComprasMerchandisingInner `json:"comprasMerchandising"`
+	ComprasAlbumes       []HistorialComprasAlbumes       `json:"comprasAlbumes"`
+	ComprasMerchandising []HistorialComprasMerchandising `json:"comprasMerchandising"`
 }
