@@ -1,0 +1,49 @@
+# docker-compose up -d 
+# Get-Content db\esquemas.cql | docker exec -i estadisticas_db cqlsh -u user -p 12345 (levantar el keyspace y meterle las tablas, powershell)
+# Get-Content db\datos.cql | docker exec -i estadisticas_db cqlsh -u user -p 12345 (meter los datos)
+
+services:
+  estadisticas-db:
+    image: cassandra:3.11.14
+    container_name: estadisticas_db
+    restart: always
+    environment:
+      CASSANDRA_CLUSTER_NAME: "EstadisticasCluster"
+      CASSANDRA_USER: user
+      CASSANDRA_PASSWORD: 12345
+      CASSANDRA_AUTHENTICATOR: PasswordAuthenticator
+    ports:
+      - "9042:9042"
+    volumes:
+      - estadisticas_data:/var/lib/cassandra
+    networks:
+      - estadisticas-network
+
+  estadisticas-app:
+    image: golang:1.25.3-alpine
+    container_name: estadisticas_app
+    working_dir: /app
+    ports:
+      - "8083:8080"
+    depends_on:
+      - estadisticas-db
+    environment:
+      CASSANDRA_HOST: estadisticas-db
+      CASSANDRA_PORT: 9042
+      CASSANDRA_USER: user
+      CASSANDRA_PASSWORD: 12345
+      GIN_MODE: debug
+    volumes:
+      - .:/app
+    command: go run main.go
+    networks:
+      - estadisticas-network
+
+volumes:
+  estadisticas_data:
+
+networks:
+  estadisticas-network:
+    driver: bridge
+    external: true
+    name: micro-servicios

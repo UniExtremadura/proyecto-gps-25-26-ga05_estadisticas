@@ -10,23 +10,143 @@
 package openapi
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/gin-gonic/gin"
+	"github.com/gocql/gocql"
 )
 
 type UsuariosAPI struct {
+	DB *gocql.Session
 }
 
 // Get /usuarios/:idUsuario/estadisticas
-// Obtener estadisticas de consumo de un usuario 
+// Obtener estadisticas de consumo de un usuario
 func (api *UsuariosAPI) UsuariosIdUsuarioEstadisticasGet(c *gin.Context) {
 	// Your handler implementation
 	c.JSON(200, gin.H{"status": "OK"})
 }
 
 // Get /usuarios/:idUsuario/historialCompras
-// Obtener historial de compras de un usuario 
+// Obtener historial de compras de un usuario
 func (api *UsuariosAPI) UsuariosIdUsuarioHistorialComprasGet(c *gin.Context) {
-	// Your handler implementation
-	c.JSON(200, gin.H{"status": "OK"})
+	idUsuarioStr := c.Param("idUsuario")
+	idUsuario, err := strconv.Atoi(idUsuarioStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "idUsuario inválido"})
+		return
+	}
+
+	historial := HistorialCompras{}
+
+	// --- Compras de álbumes ---
+	var historialAlbum []HistorialComprasAlbumes
+	iterAlbum := api.DB.Query(`SELECT idAlbum, fecha FROM compraAlbum WHERE idUsuario = ?`, int32(idUsuario)).Iter()
+	var idAlbum int32
+	var fechaAlbum time.Time
+	for iterAlbum.Scan(&idAlbum, &fechaAlbum) {
+		nombre, urlImagen, err := fetchAlbumContenido(idAlbum)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "error obteniendo información de álbum"})
+			return
+		}
+
+		historialAlbum = append(historialAlbum, HistorialComprasAlbumes{
+			IdAlbum:   idAlbum,
+			Fecha:     fechaAlbum.Format(time.RFC3339),
+			Nombre:    nombre,
+			UrlImagen: urlImagen,
+		})
+	}
+	if err := iterAlbum.Close(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
+		return
+	}
+	historial.ComprasAlbumes = historialAlbum
+
+	// --- Compras de merchandising ---
+	var historialMerch []HistorialComprasMerchandising
+	iterMerch := api.DB.Query(`SELECT idMerch, fecha FROM compraMerch WHERE idUsuario = ?`, int32(idUsuario)).Iter()
+	var idMerch int32
+	var fechaMerch time.Time
+	for iterMerch.Scan(&idMerch, &fechaMerch) {
+		nombre, urlImagen, err := fetchMerchContenido(idMerch)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "error obteniendo información de merchandising"})
+			return
+		}
+
+		historialMerch = append(historialMerch, HistorialComprasMerchandising{
+			IdMerch:   idMerch,
+			Fecha:     fechaMerch.Format(time.RFC3339),
+			Nombre:    nombre,
+			UrlImagen: urlImagen,
+		})
+	}
+	if err := iterMerch.Close(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
+		return
+	}
+	historial.ComprasMerchandising = historialMerch
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":    "OK",
+		"historial": historial,
+	})
 }
 
+func fetchAlbumContenido(id int32) (string, string, error) {
+	resp, err := http.Get(fmt.Sprintf("http://contenido-app:8080/albums/%d", id))
+	if err != nil {
+		return "", "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", "", fmt.Errorf("servicio de contenido devolvió código %d", resp.StatusCode)
+	}
+
+	var data struct {
+		Status string `json:"status"`
+		Album  struct {
+			Nombre    string `json:"nombre"`
+			UrlImagen string `json:"urlImagen"`
+		} `json:"album"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+		return "", "", err
+	}
+
+	return data.Album.Nombre, data.Album.UrlImagen, nil
+}
+
+func fetchMerchContenido(id int32) (string, string, error) {
+	resp, err := http.Get(fmt.Sprintf("http://contenido-app:8080/merch/%d", id))
+	if err != nil {
+		return "", "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", "", fmt.Errorf("servicio de contenido devolvió código %d", resp.StatusCode)
+	}
+
+	var data struct {
+		Status string `json:"status"`
+		Merch  struct {
+			Nombre    string `json:"nombre"`
+			UrlImagen string `json:"urlImagen"`
+		} `json:"merch"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+		return "", "", err
+	}
+
+	return data.Merch.Nombre, data.Merch.UrlImagen, nil
+}

@@ -11,16 +11,25 @@ package openapi
 
 import (
 	"time"
+
+	"github.com/gocql/gocql"
 )
 
 type CompraAlbum struct {
+	IdUsuario int32     `json:"idUsuario"`
+	IdAlbum   int32     `json:"idAlbum"`
+	Fecha     time.Time `json:"fecha"`
+}
 
-	// ID del usuario
-	IdUsuario int32 `json:"idUsuario"`
+func (a *CompraAlbum) storeAlbumOrder(session *gocql.Session) error {
+	query := `
+	INSERT INTO compraAlbum (idUsuario,idAlbum,fecha)
+	VALUES (?, ?, ?)
+	`
 
-	// ID del album
-	IdAlbum int32 `json:"idAlbum"`
-
-	// Fecha y hora de la compra
-	Fecha time.Time `json:"fecha"`
+	err := session.Query(query, a.IdUsuario, a.IdAlbum, a.Fecha).Exec()
+	if err != nil {
+		return err
+	}
+	return nil
 }

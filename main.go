@@ -15,11 +15,17 @@ import (
 	// WARNING!
 	// Pass --git-repo-id and --git-user-id properties when generating the code
 	//
+	"github.com/GIT_USER_ID/GIT_REPO_ID/db"
 	sw "github.com/GIT_USER_ID/GIT_REPO_ID/go"
 )
 
 func main() {
-	routes := sw.ApiHandleFunctions{}
+	db.InitDatabase()
+	defer db.CloseDatabase()
+	routes := sw.ApiHandleFunctions{
+		EventosAPI:  sw.EventosAPI{DB: db.Session},
+		UsuariosAPI: sw.UsuariosAPI{DB: db.Session},
+	}
 
 	log.Printf("Server started")
 

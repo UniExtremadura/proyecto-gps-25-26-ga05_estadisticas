@@ -10,30 +10,58 @@
 package openapi
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/gocql/gocql"
 )
 
 type EventosAPI struct {
+	DB *gocql.Session
 }
 
 // Post /compras/albumes
-// Registrar compra de album 
+// Registrar compra de album
 func (api *EventosAPI) ComprasAlbumesPost(c *gin.Context) {
-	// Your handler implementation
-	c.JSON(200, gin.H{"status": "OK"})
+	var req CompraAlbum
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "JSON invalido"})
+		return
+	}
+
+	err := req.storeAlbumOrder(api.DB)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
+	}
+	c.JSON(200, gin.H{
+		"status": "OK",
+	})
 }
 
 // Post /compras/merchandising
-// Registrar compra de merchandising 
+// Registrar compra de merchandising
 func (api *EventosAPI) ComprasMerchandisingPost(c *gin.Context) {
+	var req CompraMerch
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "JSON invalido"})
+		return
+	}
+
+	err := req.storeMerchOrder(api.DB)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
+	}
 	// Your handler implementation
-	c.JSON(200, gin.H{"status": "OK"})
+	c.JSON(200, gin.H{
+		"status": "OK",
+	})
 }
 
 // Post /escuchas
-// Registrar una nueva escucha de cancion 
+// Registrar una nueva escucha de cancion
 func (api *EventosAPI) EscuchasPost(c *gin.Context) {
 	// Your handler implementation
 	c.JSON(200, gin.H{"status": "OK"})
 }
-
