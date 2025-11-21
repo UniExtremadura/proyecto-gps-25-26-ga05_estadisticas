@@ -10,6 +10,7 @@
 package openapi
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -51,7 +52,11 @@ func (api *UsuariosAPI) UsuariosIdUsuarioHistorialComprasGet(c *gin.Context) {
 	for iterAlbum.Scan(&idAlbum, &fechaAlbum) {
 		nombre, urlImagen, err := fetchAlbumContenido(idAlbum)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "error obteniendo información de álbum"})
+			fmt.Printf("Error fetchAlbumContenido para idAlbum=%d: %v\n", idAlbum, err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status":  "error",
+				"message": fmt.Sprintf("error obteniendo información de álbum: %v", err),
+			})
 			return
 		}
 
@@ -62,6 +67,7 @@ func (api *UsuariosAPI) UsuariosIdUsuarioHistorialComprasGet(c *gin.Context) {
 			UrlImagen: urlImagen,
 		})
 	}
+
 	if err := iterAlbum.Close(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
 		return
@@ -76,7 +82,11 @@ func (api *UsuariosAPI) UsuariosIdUsuarioHistorialComprasGet(c *gin.Context) {
 	for iterMerch.Scan(&idMerch, &fechaMerch) {
 		nombre, urlImagen, err := fetchMerchContenido(idMerch)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "error obteniendo información de merchandising"})
+			fmt.Printf("Error fetchMerchContenido para idMerch=%d: %v\n", idMerch, err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status":  "error",
+				"message": fmt.Sprintf("error obteniendo información de merchandising: %v", err),
+			})
 			return
 		}
 
@@ -87,6 +97,7 @@ func (api *UsuariosAPI) UsuariosIdUsuarioHistorialComprasGet(c *gin.Context) {
 			UrlImagen: urlImagen,
 		})
 	}
+
 	if err := iterMerch.Close(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
 		return
@@ -110,19 +121,23 @@ func fetchAlbumContenido(id int32) (string, string, error) {
 		return "", "", fmt.Errorf("servicio de contenido devolvió código %d", resp.StatusCode)
 	}
 
-	var data struct {
-		Status string `json:"status"`
-		Album  struct {
-			Nombre    string `json:"nombre"`
-			UrlImagen string `json:"urlImagen"`
-		} `json:"album"`
+	// Decodificamos DIRECTAMENTE el Album que devuelve el microservicio
+	var album struct {
+		Nombre string `json:"nombre"`
+		Imagen []byte `json:"imagen"`
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&album); err != nil {
 		return "", "", err
 	}
 
-	return data.Album.Nombre, data.Album.UrlImagen, nil
+	// Convertimos la imagen a base64
+	urlImagen := ""
+	if len(album.Imagen) > 0 {
+		urlImagen = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(album.Imagen)
+	}
+
+	return album.Nombre, urlImagen, nil
 }
 
 func fetchMerchContenido(id int32) (string, string, error) {
@@ -139,8 +154,8 @@ func fetchMerchContenido(id int32) (string, string, error) {
 	var data struct {
 		Status string `json:"status"`
 		Merch  struct {
-			Nombre    string `json:"nombre"`
-			UrlImagen string `json:"urlImagen"`
+			Nombre string `json:"nombre"`
+			Imagen string `json:"imagen"` // campo en Base64
 		} `json:"merch"`
 	}
 
@@ -148,5 +163,11 @@ func fetchMerchContenido(id int32) (string, string, error) {
 		return "", "", err
 	}
 
-	return data.Merch.Nombre, data.Merch.UrlImagen, nil
+	// Construir URL data:image/jpeg;base64
+	var urlImagen string
+	if data.Merch.Imagen != "" {
+		urlImagen = fmt.Sprintf("data:image/jpeg;base64,%s", data.Merch.Imagen)
+	}
+
+	return data.Merch.Nombre, urlImagen, nil
 }
