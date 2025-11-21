@@ -9,6 +9,11 @@ INSERT INTO escucha (idUsuario, idCancion, fecha) VALUES (4, 5, '2025-05-22T16:1
 
 -- Compra Album
 INSERT INTO compraAlbum (idUsuario, idAlbum, fecha) VALUES (1, 1, '2025-01-11T12:00:00');
+INSERT INTO compraAlbum (idUsuario, idAlbum, fecha) VALUES (11, 2, '2024-01-12T12:00:00');
+INSERT INTO compraAlbum (idUsuario, idAlbum, fecha) VALUES (11, 1, '2025-01-12T12:00:00');
 
 -- Compra Merch
 INSERT INTO compraMerch (idUsuario, idMerch, fecha, cantidad) VALUES (1, 1, '2025-01-12T09:10:00',1);
+INSERT INTO compraMerch (idUsuario, idMerch, fecha, cantidad) VALUES (11, 2, '2025-03-12T09:10:00',2);
+INSERT INTO compraMerch (idUsuario, idMerch, fecha, cantidad) VALUES (11, 1, '2025-02-12T09:10:00',2);
+
