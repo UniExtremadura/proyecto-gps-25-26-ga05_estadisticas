@@ -1,7 +1,3 @@
-# docker-compose up -d 
-# Get-Content db\esquemas.cql | docker exec -i estadisticas_db cqlsh -u user -p 12345 (levantar el keyspace y meterle las tablas, powershell)
-# Get-Content db\datos.cql | docker exec -i estadisticas_db cqlsh -u user -p 12345 (meter los datos)
-
 services:
   estadisticas-db:
     image: cassandra:3.11.14
@@ -35,7 +31,7 @@ services:
       GIN_MODE: debug
     volumes:
       - .:/app
-    command: go run main.go
+    command: sh -c "sleep 20 && go run main.go"
     networks:
       - estadisticas-network
 

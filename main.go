@@ -24,6 +24,7 @@ func main() {
 	defer db.CloseDatabase()
 	routes := sw.ApiHandleFunctions{
 		EventosAPI:  sw.EventosAPI{DB: db.Session},
+		MetricasAPI: sw.MetricasAPI{DB: db.Session},
 		UsuariosAPI: sw.UsuariosAPI{DB: db.Session},
 	}
 
