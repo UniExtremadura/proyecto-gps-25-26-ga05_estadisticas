@@ -5,7 +5,7 @@ info:
 
     El codigo del proyecto esta disponible en el [repositorio de GitHub](https://github.com/UniExtremadura/proyecto-gps-25-26-ga05).
   title: Microservicio de Estadisticas - GA04
-  version: 0.1.0
+  version: 1.1.0
 servers:
 - url: /
 tags:
@@ -28,8 +28,18 @@ paths:
       responses:
         "201":
           description: Escucha registrada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
         "400":
           description: Datos de entrada invalidos
+        "500":
+          description: Error interno del servidor
       summary: Registrar una nueva escucha de cancion
       tags:
       - Eventos
@@ -44,8 +54,18 @@ paths:
       responses:
         "201":
           description: Compra de album registrada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
         "400":
           description: Datos de entrada invalidos
+        "500":
+          description: Error interno del servidor
       summary: Registrar compra de album
       tags:
       - Eventos
@@ -60,8 +80,18 @@ paths:
       responses:
         "201":
           description: Compra de merch registrada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
         "400":
           description: Datos de entrada invalidos
+        "500":
+          description: Error interno del servidor
       summary: Registrar compra de merchandising
       tags:
       - Eventos
@@ -81,10 +111,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HistorialCompras"
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                  historial:
+                    $ref: "#/components/schemas/HistorialCompras"
           description: Historial de compras obtenido exitosamente
         "404":
           description: Usuario no encontrado
+        "500":
+          description: Error interno del servidor
       summary: Obtener historial de compras de un usuario
       tags:
       - Usuarios
@@ -108,6 +146,8 @@ paths:
           description: Estadisticas de la cancion
         "404":
           description: Cancion no encontrada
+        "500":
+          description: Error interno del servidor
       summary: Obtener estadisticas de una cancion
       tags:
       - Metricas
@@ -131,6 +171,8 @@ paths:
           description: Estadisticas del album
         "404":
           description: Album no encontrado
+        "500":
+          description: Error interno del servidor
       summary: Obtener estadisticas de un album
       tags:
       - Metricas
@@ -154,6 +196,8 @@ paths:
           description: Estadisticas del merch
         "404":
           description: Producto no encontrado
+        "500":
+          description: Error interno del servidor
       summary: Obtener estadisticas de un producto de merchandising
       tags:
       - Metricas
@@ -190,6 +234,8 @@ paths:
           description: Estadisticas del usuario
         "404":
           description: Usuario no encontrado
+        "500":
+          description: Error interno del servidor
       summary: Obtener estadisticas de consumo de un usuario
       tags:
       - Usuarios
@@ -225,10 +271,12 @@ paths:
           content:
             application/json:
               schema:
+                type: array
                 items:
                   $ref: "#/components/schemas/RankingCancion"
-                type: array
           description: Ranking de canciones
+        "500":
+          description: Error interno del servidor
       summary: Obtener ranking de canciones mas escuchadas
       tags:
       - Metricas
@@ -287,6 +335,7 @@ components:
         fecha: 2024-10-04T16:45:00Z
         idUsuario: 123
         idMerch: 321
+        cantidad: 2
       properties:
         idUsuario:
           description: ID del usuario
@@ -301,55 +350,42 @@ components:
           example: 2024-10-04T16:45:00Z
           format: date-time
           type: string
+        cantidad:
+          description: Cantidad de productos comprados
+          example: 2
+          type: integer
       required:
       - fecha
       - idMerch
       - idUsuario
+      - cantidad
       type: object
     HistorialCompras:
       example:
         comprasMerchandising:
         - idMerch: 321
-          fecha: 2024-10-04
+          fecha: "2024-10-04T00:00:00Z"
           nombre: Camiseta Bandera
           urlImagen: https://example.com/merch/camiseta.jpg
         - idMerch: 322
-          fecha: 2024-08-15
+          fecha: "2024-08-15T00:00:00Z"
           nombre: Taza Vintage
           urlImagen: https://example.com/merch/taza.jpg
         comprasAlbumes:
         - idAlbum: 789
-          fecha: 2024-10-05
+          fecha: "2024-10-05T00:00:00Z"
           nombre: Album Revolucion
           urlImagen: https://example.com/albums/revolucion.jpg
         - idAlbum: 790
-          fecha: 2024-09-20
+          fecha: "2024-09-20T00:00:00Z"
           nombre: Noche Estrellada
           urlImagen: https://example.com/albums/noche.jpg
       properties:
         comprasAlbumes:
-          example:
-          - idAlbum: 789
-            fecha: 2024-10-05
-            nombre: Album Revolucion
-            urlImagen: https://example.com/albums/revolucion.jpg
-          - idAlbum: 790
-            fecha: 2024-09-20
-            nombre: Noche Estrellada
-            urlImagen: https://example.com/albums/noche.jpg
           items:
             $ref: "#/components/schemas/HistorialCompras_comprasAlbumes_inner"
           type: array
         comprasMerchandising:
-          example:
-          - idMerch: 321
-            fecha: 2024-10-04
-            nombre: Camiseta Bandera
-            urlImagen: https://example.com/merch/camiseta.jpg
-          - idMerch: 322
-            fecha: 2024-08-15
-            nombre: Taza Vintage
-            urlImagen: https://example.com/merch/taza.jpg
           items:
             $ref: "#/components/schemas/HistorialCompras_comprasMerchandising_inner"
           type: array
@@ -462,6 +498,7 @@ components:
         idCancion: 456
         escuchas: 12500
         nombreCancion: Cancion del Verano
+        nombreArtista: Artista Principal
       properties:
         idCancion:
           description: ID de la cancion
@@ -470,6 +507,10 @@ components:
         nombreCancion:
           description: Nombre de la cancion
           example: Cancion del Verano
+          type: string
+        nombreArtista:
+          description: Nombre del artista
+          example: Artista Principal
           type: string
         escuchas:
           description: Cantidad de escuchas de la cancion
@@ -483,6 +524,7 @@ components:
       - escuchas
       - idCancion
       - nombreCancion
+      - nombreArtista
       - posicion
       type: object
     HistorialCompras_comprasAlbumes_inner:
@@ -491,8 +533,8 @@ components:
           example: 789
           type: integer
         fecha:
-          example: 2024-10-05
-          format: date
+          example: "2024-10-05T00:00:00Z"
+          format: date-time
           type: string
         nombre:
           example: Album Revolucion
@@ -507,8 +549,8 @@ components:
           example: 321
           type: integer
         fecha:
-          example: 2024-10-04
-          format: date
+          example: "2024-10-04T00:00:00Z"
+          format: date-time
           type: string
         nombre:
           example: Camiseta Bandera
