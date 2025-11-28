@@ -37,7 +37,7 @@ func InitDatabase() {
 			'class': 'SimpleStrategy',
 			'replication_factor': 1
 		}`
-	
+
 	if err := tempSession.Query(createKeyspaceQuery).Exec(); err != nil {
 		log.Fatal("Error creando keyspace: ", err)
 	}
@@ -51,7 +51,7 @@ func InitDatabase() {
 
 	// Crear tablas
 	createTables()
-	
+
 	// Insertar datos de ejemplo
 	insertSampleData()
 
@@ -121,8 +121,15 @@ func insertSampleData() {
 		fecha     time.Time
 	}{
 		{1, 1, parseTime("2025-01-10T10:00:00Z")},
+		{2, 1, parseTime("2025-02-10T11:00:00Z")},
+		{3, 1, parseTime("2025-03-10T10:00:00Z")},
+		{3, 1, parseTime("2025-01-10T12:00:00Z")},
+		{4, 1, parseTime("2025-02-10T10:50:00Z")},
 		{1, 2, parseTime("2025-02-12T11:30:00Z")},
+		{1, 2, parseTime("2025-03-12T11:30:00Z")},
+		{1, 2, parseTime("2025-05-12T11:20:00Z")},
 		{2, 3, parseTime("2025-03-15T09:20:00Z")},
+		{3, 3, parseTime("2025-03-15T09:11:20Z")},
 		{3, 4, parseTime("2025-04-18T14:45:00Z")},
 		{4, 5, parseTime("2025-05-22T16:10:00Z")},
 	}
@@ -141,8 +148,7 @@ func insertSampleData() {
 		fecha     time.Time
 	}{
 		{1, 1, parseTime("2025-01-11T12:00:00Z")},
-		{11, 2, parseTime("2024-01-12T12:00:00Z")},
-		{11, 1, parseTime("2025-01-12T12:00:00Z")},
+		{1, 2, parseTime("2025-02-11T12:00:00Z")},
 	}
 
 	for _, c := range comprasAlbum {
@@ -160,8 +166,7 @@ func insertSampleData() {
 		cantidad  int
 	}{
 		{1, 1, parseTime("2025-01-12T09:10:00Z"), 1},
-		{11, 2, parseTime("2025-03-12T09:10:00Z"), 2},
-		{11, 1, parseTime("2025-02-12T09:10:00Z"), 2},
+		{1, 2, parseTime("2025-01-13T09:11:00Z"), 2},
 	}
 
 	for _, c := range comprasMerch {
