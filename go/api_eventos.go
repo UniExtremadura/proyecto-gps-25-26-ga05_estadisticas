@@ -53,7 +53,6 @@ func (api *EventosAPI) ComprasMerchandisingPost(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
 	}
-	// Your handler implementation
 	c.JSON(200, gin.H{
 		"status": "OK",
 	})
@@ -62,6 +61,22 @@ func (api *EventosAPI) ComprasMerchandisingPost(c *gin.Context) {
 // Post /escuchas
 // Registrar una nueva escucha de cancion
 func (api *EventosAPI) EscuchasPost(c *gin.Context) {
-	// Your handler implementation
-	c.JSON(200, gin.H{"status": "OK"})
+	var req Escucha
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "JSON invalido"})
+		return
+	}
+
+	query := `INSERT INTO escucha (idUsuario, idCancion, fecha) VALUES (?, ?, ?)`
+	
+	err := api.DB.Query(query, req.IdUsuario, req.IdCancion, req.Fecha).Exec()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"status": "OK",
+	})
 }
