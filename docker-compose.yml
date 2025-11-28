@@ -31,7 +31,7 @@ services:
       GIN_MODE: debug
     volumes:
       - .:/app
-    command: go run main.go
+    command: sh -c "sleep 20 && go run main.go"
     networks:
       - estadisticas-network
 

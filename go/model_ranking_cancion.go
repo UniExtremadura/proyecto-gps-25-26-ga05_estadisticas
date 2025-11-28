@@ -17,6 +17,9 @@ type RankingCancion struct {
 	// Nombre de la cancion
 	NombreCancion string `json:"nombreCancion"`
 
+	// Nombre del artista
+	NombreArtista string `json:"nombreArtista"`
+
 	// Cantidad de escuchas de la cancion
 	Escuchas int32 `json:"escuchas"`
 
